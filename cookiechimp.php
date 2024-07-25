@@ -2,7 +2,7 @@
 /*
 Plugin Name: CookieChimp
 Plugin URI: https://cookiechimp.com
-Description: CookieChimp CMP consent management platform plugin that inserts CookieChimp's JS code into the head section of the website to add consent banners.
+Description: CookieChimp CMP (Consent Management Platform) plugin that inserts CookieChimp's JS code to the website to add consent banners.
 Version: 1.0
 Author: CookieChimp
 Author URI: https://cookiechimp.com
@@ -73,7 +73,7 @@ function cookiechimp_settings_page() {
         </p>
         <p>
             <?php esc_html_e('You can', 'cookiechimp'); ?> 
-            <a href="https://wordpress.org/plugins/wp-consent-api/" target="_blank"><?php esc_html_e('download the WP Consent API plugin', 'cookiechimp'); ?></a> 
+            <a href="https://wordpress.org/plugins/wp-consent-api/" target="_blank"><?php esc_html_e('install the WP Consent API plugin', 'cookiechimp'); ?></a> 
             <?php esc_html_e('from the WordPress plugin repository.', 'cookiechimp'); ?>
         </p>
     </div>
@@ -104,7 +104,7 @@ function cookiechimp_dependency_notice() {
                 <?php esc_html_e('CookieChimp recommends installing the WP Consent API plugin for full functionality. Please configure the', 'cookiechimp'); ?>
                 <a href="<?php echo esc_url(admin_url('options-general.php?page=cookiechimp')); ?>"><?php esc_html_e('CookieChimp settings', 'cookiechimp'); ?></a>
                 <?php esc_html_e(' and', 'cookiechimp'); ?>
-                <a href="https://wordpress.org/plugins/wp-consent-api/" target="_blank"><?php esc_html_e('download the WP Consent API plugin', 'cookiechimp'); ?></a>.
+                <a href="https://wordpress.org/plugins/wp-consent-api/" target="_blank"><?php esc_html_e('install the WP Consent API plugin', 'cookiechimp'); ?></a>.
             </p>
         </div>
         <?php
