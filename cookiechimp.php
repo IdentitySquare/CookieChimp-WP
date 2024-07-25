@@ -3,9 +3,9 @@
 Plugin Name: CookieChimp
 Plugin URI: https://cookiechimp.com
 Description: CookieChimp CMP (Consent Management Platform) plugin that inserts CookieChimp's JS code to the website to add consent banners.
-Version: 1.0
-Author: CookieChimp
-Author URI: https://cookiechimp.com
+Version: 1.0.1
+Author: Identity Square
+Author URI: https://identitysquare.com
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
