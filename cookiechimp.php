@@ -10,6 +10,11 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 // Include the plugin.php file for is_plugin_active function
 if (!function_exists('is_plugin_active')) {
     require_once(ABSPATH . 'wp-admin/includes/plugin.php');
@@ -81,12 +86,12 @@ function cookiechimp_settings_page() {
 }
 
 // Hook to insert the CookieChimp JS in the head section with high priority
-add_action('wp_head', 'insert_cookiechimp_js', 1);
+add_action('wp_head', 'cookiechimp_insert_js', 1);
 
 /**
  * Output the CookieChimp JS directly into the head section.
  */
-function insert_cookiechimp_js() {
+function cookiechimp_insert_js() {
     $cookiechimp_account_id = get_option('cookiechimp_account_id');
     if ($cookiechimp_account_id) {
         echo '<script src="https://cookiechimp.com/widget/' . esc_attr($cookiechimp_account_id) . '.js"></script>';
