@@ -45,7 +45,15 @@ function cookiechimp_create_menu() {
  * Register the CookieChimp Account ID setting.
  */
 function cookiechimp_register_settings() {
-    register_setting('cookiechimp-settings-group', 'cookiechimp_account_id');
+    register_setting(
+        'cookiechimp-settings-group',
+        'cookiechimp_account_id',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default'           => '',
+        )
+    );
 }
 
 /**
