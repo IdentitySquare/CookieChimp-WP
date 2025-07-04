@@ -94,16 +94,22 @@ function cookiechimp_settings_page() {
     <?php
 }
 
-// Hook to insert the CookieChimp JS in the head section with high priority
-add_action('wp_head', 'cookiechimp_insert_js', 1);
+// Enqueue the CookieChimp JS early so it appears before other scripts
+add_action('wp_enqueue_scripts', 'cookiechimp_enqueue_js', 0);
 
 /**
- * Output the CookieChimp JS directly into the head section.
+ * Enqueue the CookieChimp JS in the head.
  */
-function cookiechimp_insert_js() {
+function cookiechimp_enqueue_js() {
     $cookiechimp_account_id = get_option('cookiechimp_account_id');
     if ($cookiechimp_account_id) {
-        echo '<script src="https://cookiechimp.com/widget/' . esc_attr($cookiechimp_account_id) . '.js"></script>';
+        wp_enqueue_script(
+            'cookiechimp-widget',
+            'https://cookiechimp.com/widget/' . esc_attr($cookiechimp_account_id) . '.js',
+            array(),
+            null,
+            false
+        );
     }
 }
 
