@@ -1,17 +1,42 @@
-name: "build-test"
-on: # rebuild any PRs and main branch changes
+name: Build and test plugin
+
+on:
   pull_request:
   push:
     branches:
       - main
       - "releases/*"
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        run: php tests/plugin-test.php
+
+      - name: Build WordPress.org package
+        run: |
+          mkdir -p build/cookiechimp
+          cp cookiechimp.php readme.txt build/cookiechimp/
 
       - name: Run plugin check
         uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: ./build/cookiechimp
+
+      - name: Create review ZIP
+        working-directory: build
+        run: zip -r cookiechimp.zip cookiechimp
+
+      - name: Upload review ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookiechimp-wordpress-plugin
+          path: build/cookiechimp.zip
+          if-no-files-found: error
