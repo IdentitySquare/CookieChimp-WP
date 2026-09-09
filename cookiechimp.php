@@ -135,8 +135,9 @@ function cookiechimp_insert_js() {
 		false
 	);
 
-	// Print only this dependency-free handle now so later queued scripts remain later.
-	wp_print_scripts( 'cookiechimp-widget' );
+	// Print only this dependency-free handle without firing the global print hook.
+	$cookiechimp_scripts = wp_scripts();
+	$cookiechimp_scripts->do_items( 'cookiechimp-widget' );
 }
 
 /**

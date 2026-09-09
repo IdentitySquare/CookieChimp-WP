@@ -8,12 +8,21 @@
 
 define( 'ABSPATH', __DIR__ . '/wordpress/' );
 
+class CookieChimp_Test_Script_Loader {
+	public $rendered_handles = array();
+
+	public function do_items( $handles ) {
+		$this->rendered_handles[] = $handles;
+	}
+}
+
 $cookiechimp_test_actions         = array();
 $cookiechimp_test_filters         = array();
 $cookiechimp_test_options         = array();
 $cookiechimp_test_settings_errors = array();
 $cookiechimp_test_scripts         = array();
 $cookiechimp_test_printed_scripts = array();
+$cookiechimp_test_script_loader   = new CookieChimp_Test_Script_Loader();
 
 function add_action( $hook, $callback, $priority = 10 ) {
 	global $cookiechimp_test_actions;
@@ -69,6 +78,11 @@ function wp_print_scripts( $handle ) {
 	$cookiechimp_test_printed_scripts[] = $handle;
 }
 
+function wp_scripts() {
+	global $cookiechimp_test_script_loader;
+	return $cookiechimp_test_script_loader;
+}
+
 require dirname( __DIR__ ) . '/cookiechimp.php';
 
 /**
@@ -119,7 +133,8 @@ cookiechimp_test_assert( 'https://cookiechimp.com/widget/AbC234.js' === $cookiec
 cookiechimp_test_assert( array() === $cookiechimp_test_scripts['cookiechimp-widget'][1], 'The widget should have no script dependencies.' );
 cookiechimp_test_assert( null === $cookiechimp_test_scripts['cookiechimp-widget'][2], 'The dynamic widget URL should not receive a version query parameter.' );
 cookiechimp_test_assert( false === $cookiechimp_test_scripts['cookiechimp-widget'][3], 'The widget must be registered as a head script.' );
-cookiechimp_test_assert( array( 'cookiechimp-widget' ) === $cookiechimp_test_printed_scripts, 'Only the CookieChimp handle should be printed immediately.' );
+cookiechimp_test_assert( array() === $cookiechimp_test_printed_scripts, 'The global script printer must not be invoked early.' );
+cookiechimp_test_assert( array( 'cookiechimp-widget' ) === $cookiechimp_test_script_loader->rendered_handles, 'Only the CookieChimp handle should be rendered immediately.' );
 
 $plugin_source = file_get_contents( dirname( __DIR__ ) . '/cookiechimp.php' );
 $readme_source = file_get_contents( dirname( __DIR__ ) . '/readme.txt' );
