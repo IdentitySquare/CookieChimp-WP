@@ -12,6 +12,8 @@ $cookiechimp_test_actions         = array();
 $cookiechimp_test_filters         = array();
 $cookiechimp_test_options         = array();
 $cookiechimp_test_settings_errors = array();
+$cookiechimp_test_scripts         = array();
+$cookiechimp_test_printed_scripts = array();
 
 function add_action( $hook, $callback, $priority = 10 ) {
 	global $cookiechimp_test_actions;
@@ -53,6 +55,20 @@ function esc_url( $url ) {
 	return $url;
 }
 
+function esc_url_raw( $url ) {
+	return $url;
+}
+
+function wp_enqueue_script( $handle, $src, $dependencies, $version, $in_footer ) {
+	global $cookiechimp_test_scripts;
+	$cookiechimp_test_scripts[ $handle ] = array( $src, $dependencies, $version, $in_footer );
+}
+
+function wp_print_scripts( $handle ) {
+	global $cookiechimp_test_printed_scripts;
+	$cookiechimp_test_printed_scripts[] = $handle;
+}
+
 require dirname( __DIR__ ) . '/cookiechimp.php';
 
 /**
@@ -78,7 +94,8 @@ $cookiechimp_test_options['cookiechimp_account_id'] = 'OldAccount123';
 cookiechimp_test_assert( 'ValidAccount234' === cookiechimp_sanitize_account_id( ' ValidAccount234 ' ), 'Valid alphanumeric Account IDs should be normalized and saved.' );
 cookiechimp_test_assert( '' === cookiechimp_sanitize_account_id( '' ), 'An empty Account ID should disable the widget.' );
 cookiechimp_test_assert( 'OldAccount123' === cookiechimp_sanitize_account_id( '../invalid' ), 'An invalid Account ID should not replace the saved value.' );
-cookiechimp_test_assert( 1 === count( $cookiechimp_test_settings_errors ), 'An invalid Account ID should add one settings error.' );
+cookiechimp_test_assert( 'OldAccount123' === cookiechimp_sanitize_account_id( array( 'invalid' ) ), 'A non-scalar Account ID should not replace the saved value.' );
+cookiechimp_test_assert( 2 === count( $cookiechimp_test_settings_errors ), 'Each invalid Account ID should add one settings error.' );
 
 $cookiechimp_test_options['cookiechimp_account_id'] = '';
 ob_start();
@@ -96,10 +113,13 @@ $cookiechimp_test_options['cookiechimp_account_id'] = 'AbC234';
 ob_start();
 cookiechimp_insert_js();
 $output = ob_get_clean();
-cookiechimp_test_assert(
-	"<script id=\"cookiechimp-widget\" src=\"https://cookiechimp.com/widget/AbC234.js\"></script>\n" === $output,
-	'The configured widget should be printed synchronously with the exact CookieChimp URL.'
-);
+cookiechimp_test_assert( '' === $output, 'The plugin should let WordPress render the script tag.' );
+cookiechimp_test_assert( isset( $cookiechimp_test_scripts['cookiechimp-widget'] ), 'The widget should be enqueued with a unique handle.' );
+cookiechimp_test_assert( 'https://cookiechimp.com/widget/AbC234.js' === $cookiechimp_test_scripts['cookiechimp-widget'][0], 'The widget should use the exact account-specific CookieChimp URL.' );
+cookiechimp_test_assert( array() === $cookiechimp_test_scripts['cookiechimp-widget'][1], 'The widget should have no script dependencies.' );
+cookiechimp_test_assert( null === $cookiechimp_test_scripts['cookiechimp-widget'][2], 'The dynamic widget URL should not receive a version query parameter.' );
+cookiechimp_test_assert( false === $cookiechimp_test_scripts['cookiechimp-widget'][3], 'The widget must be registered as a head script.' );
+cookiechimp_test_assert( array( 'cookiechimp-widget' ) === $cookiechimp_test_printed_scripts, 'Only the CookieChimp handle should be printed immediately.' );
 
 $plugin_source = file_get_contents( dirname( __DIR__ ) . '/cookiechimp.php' );
 $readme_source = file_get_contents( dirname( __DIR__ ) . '/readme.txt' );

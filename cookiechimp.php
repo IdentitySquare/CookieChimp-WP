@@ -59,14 +59,12 @@ function cookiechimp_register_settings() {
  * @return string Sanitized Account ID, or the previously saved value when invalid.
  */
 function cookiechimp_sanitize_account_id( $value ) {
-	if ( ! is_scalar( $value ) ) {
-		$value = '';
-	}
+	if ( is_scalar( $value ) ) {
+		$account_id = trim( sanitize_text_field( wp_unslash( (string) $value ) ) );
 
-	$account_id = trim( sanitize_text_field( wp_unslash( (string) $value ) ) );
-
-	if ( '' === $account_id || preg_match( '/\A[A-Za-z0-9]+\z/', $account_id ) ) {
-		return $account_id;
+		if ( '' === $account_id || preg_match( '/\A[A-Za-z0-9]+\z/', $account_id ) ) {
+			return $account_id;
+		}
 	}
 
 	add_settings_error(
@@ -114,11 +112,11 @@ function cookiechimp_settings_page() {
 }
 
 /**
- * Output the CookieChimp widget before every other callback on wp_head.
+ * Output the CookieChimp widget at the earliest wp_head priority.
  *
- * This script is intentionally printed directly instead of joining WordPress's
- * normal script queue. The queue is rendered later in wp_head, which is too late
- * for CookieChimp to intercept scripts that other callbacks print first.
+ * The script is registered with WordPress and then printed immediately. Waiting
+ * for the normal script queue would be too late for CookieChimp to intercept
+ * scripts that other wp_head callbacks print first.
  */
 function cookiechimp_insert_js() {
 	$cookiechimp_account_id = get_option( 'cookiechimp_account_id', '' );
@@ -129,10 +127,16 @@ function cookiechimp_insert_js() {
 
 	$script_url = 'https://cookiechimp.com/widget/' . rawurlencode( $cookiechimp_account_id ) . '.js';
 
-	printf(
-		'<script id="cookiechimp-widget" src="%s"></script>' . "\n",
-		esc_url( $script_url )
+	wp_enqueue_script(
+		'cookiechimp-widget',
+		esc_url_raw( $script_url ),
+		array(),
+		null,
+		false
 	);
+
+	// Print only this dependency-free handle now so later queued scripts remain later.
+	wp_print_scripts( 'cookiechimp-widget' );
 }
 
 /**

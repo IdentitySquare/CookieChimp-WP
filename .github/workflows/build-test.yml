@@ -30,6 +30,14 @@ jobs:
         with:
           build-dir: ./build/cookiechimp
 
+      - name: Verify CookieChimp is the first front-end script
+        run: |
+          wp-env run cli wp option update cookiechimp_account_id CiTest234
+          curl --fail --silent http://localhost:8880/ --output /tmp/cookiechimp-homepage.html
+          first_script=$(grep -o '<script[^>]*' /tmp/cookiechimp-homepage.html | head -n 1)
+          echo "$first_script"
+          [[ "$first_script" == *"https://cookiechimp.com/widget/CiTest234.js"* ]]
+
       - name: Create review ZIP
         working-directory: build
         run: zip -r cookiechimp.zip cookiechimp
