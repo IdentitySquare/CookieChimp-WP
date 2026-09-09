@@ -131,7 +131,7 @@ cookiechimp_test_assert( '' === $output, 'The plugin should let WordPress render
 cookiechimp_test_assert( isset( $cookiechimp_test_scripts['cookiechimp-widget'] ), 'The widget should be enqueued with a unique handle.' );
 cookiechimp_test_assert( 'https://cookiechimp.com/widget/AbC234.js' === $cookiechimp_test_scripts['cookiechimp-widget'][0], 'The widget should use the exact account-specific CookieChimp URL.' );
 cookiechimp_test_assert( array() === $cookiechimp_test_scripts['cookiechimp-widget'][1], 'The widget should have no script dependencies.' );
-cookiechimp_test_assert( null === $cookiechimp_test_scripts['cookiechimp-widget'][2], 'The dynamic widget URL should not receive a version query parameter.' );
+cookiechimp_test_assert( COOKIECHIMP_PLUGIN_VERSION === $cookiechimp_test_scripts['cookiechimp-widget'][2], 'The widget should use the plugin version for cache invalidation.' );
 cookiechimp_test_assert( false === $cookiechimp_test_scripts['cookiechimp-widget'][3], 'The widget must be registered as a head script.' );
 cookiechimp_test_assert( array() === $cookiechimp_test_printed_scripts, 'The global script printer must not be invoked early.' );
 cookiechimp_test_assert( array( 'cookiechimp-widget' ) === $cookiechimp_test_script_loader->rendered_handles, 'Only the CookieChimp handle should be rendered immediately.' );
@@ -143,5 +143,6 @@ preg_match( '/^Stable tag:\s+([0-9.]+)$/mi', $readme_source, $stable_tag );
 cookiechimp_test_assert( ! empty( $plugin_version[1] ), 'The plugin header version should be readable.' );
 cookiechimp_test_assert( ! empty( $stable_tag[1] ), 'The readme stable tag should be readable.' );
 cookiechimp_test_assert( $plugin_version[1] === $stable_tag[1], 'The plugin version and stable tag must match.' );
+cookiechimp_test_assert( COOKIECHIMP_PLUGIN_VERSION === $plugin_version[1], 'The enqueue version and plugin header version must match.' );
 
 fwrite( STDOUT, "CookieChimp plugin tests passed.\n" );

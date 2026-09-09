@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+define( 'COOKIECHIMP_PLUGIN_VERSION', '1.0.3' );
+
 add_action( 'admin_menu', 'cookiechimp_create_menu' );
 add_action( 'admin_init', 'cookiechimp_register_settings' );
 add_action( 'admin_notices', 'cookiechimp_dependency_notice' );
@@ -131,7 +133,7 @@ function cookiechimp_insert_js() {
 		'cookiechimp-widget',
 		esc_url_raw( $script_url ),
 		array(),
-		null,
+		COOKIECHIMP_PLUGIN_VERSION,
 		false
 	);
 
