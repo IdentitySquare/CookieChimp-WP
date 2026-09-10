@@ -1,5 +1,5 @@
 === CookieChimp ===
-Contributors: CookieChimp
+Contributors: danielpaul94
 Tags: cookies, consent, GDPR, cookie banner, consent banner
 Requires at least: 5.0
 Tested up to: 7.1
