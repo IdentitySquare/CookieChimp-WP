@@ -1,9 +1,9 @@
 === CookieChimp ===
-Contributors: CookieChimp
+Contributors: danielpaulme
 Tags: cookies, consent, GDPR, cookie banner, consent banner
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ No. The widget is loaded only after an administrator saves a valid CookieChimp A
 
 == Changelog ==
 
+= 1.0.4 =
+* Correct the WordPress.org contributor username for the official owner account.
+
 = 1.0.3 =
 * Make the CookieChimp widget the earliest `wp_head` script so it can intercept later scripts.
 * Validate the Account ID and register the setting at the correct WordPress lifecycle hook.
@@ -57,6 +60,9 @@ No. The widget is loaded only after an administrator saves a valid CookieChimp A
 * Initial public version.
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+* Corrects the contributor attribution in the plugin listing.
 
 = 1.0.3 =
 * Improves early script interception, settings reliability, validation, and service documentation.

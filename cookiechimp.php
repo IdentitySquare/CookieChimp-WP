@@ -3,7 +3,7 @@
  * Plugin Name: CookieChimp
  * Plugin URI:  https://cookiechimp.com/
  * Description: Adds the CookieChimp consent-management widget to the start of the website head.
- * Version:     1.0.3
+ * Version:     1.0.4
  * Author:      Identity Square
  * Author URI:  https://identitysquare.com/
  * License:     GPLv2 or later
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'COOKIECHIMP_PLUGIN_VERSION', '1.0.3' );
+define( 'COOKIECHIMP_PLUGIN_VERSION', '1.0.4' );
 
 add_action( 'admin_menu', 'cookiechimp_create_menu' );
 add_action( 'admin_init', 'cookiechimp_register_settings' );
