@@ -19,6 +19,8 @@ class CookieChimp_Test_Script_Loader {
 $cookiechimp_test_actions         = array();
 $cookiechimp_test_filters         = array();
 $cookiechimp_test_options         = array();
+$cookiechimp_test_site_options    = array();
+$cookiechimp_test_is_multisite    = false;
 $cookiechimp_test_settings_errors = array();
 $cookiechimp_test_scripts         = array();
 $cookiechimp_test_printed_scripts = array();
@@ -41,6 +43,22 @@ function plugin_basename( $file ) {
 function get_option( $name, $default = false ) {
 	global $cookiechimp_test_options;
 	return array_key_exists( $name, $cookiechimp_test_options ) ? $cookiechimp_test_options[ $name ] : $default;
+}
+
+function is_multisite() {
+	global $cookiechimp_test_is_multisite;
+	return $cookiechimp_test_is_multisite;
+}
+
+function get_site_option( $name, $default = false ) {
+	global $cookiechimp_test_site_options;
+	return array_key_exists( $name, $cookiechimp_test_site_options ) ? $cookiechimp_test_site_options[ $name ] : $default;
+}
+
+function update_site_option( $name, $value ) {
+	global $cookiechimp_test_site_options;
+	$cookiechimp_test_site_options[ $name ] = $value;
+	return true;
 }
 
 function wp_unslash( $value ) {
@@ -135,6 +153,43 @@ cookiechimp_test_assert( COOKIECHIMP_PLUGIN_VERSION === $cookiechimp_test_script
 cookiechimp_test_assert( false === $cookiechimp_test_scripts['cookiechimp-widget'][3], 'The widget must be registered as a head script.' );
 cookiechimp_test_assert( array() === $cookiechimp_test_printed_scripts, 'The global script printer must not be invoked early.' );
 cookiechimp_test_assert( array( 'cookiechimp-widget' ) === $cookiechimp_test_script_loader->rendered_handles, 'Only the CookieChimp handle should be rendered immediately.' );
+
+// Single site: only the site Account ID applies, even if a network value exists.
+$cookiechimp_test_options['cookiechimp_account_id']              = '';
+$cookiechimp_test_site_options['cookiechimp_network_account_id'] = 'Network234';
+cookiechimp_test_assert( false === cookiechimp_is_network_active(), 'A single site is never network-activated.' );
+cookiechimp_test_assert( '' === cookiechimp_get_account_id(), 'A single site must not fall back to a network Account ID.' );
+
+// Multisite, activated per site: each site needs its own Account ID.
+$cookiechimp_test_is_multisite = true;
+$cookiechimp_test_site_options['active_sitewide_plugins'] = array( 'other/other.php' => 1 );
+cookiechimp_test_assert( false === cookiechimp_is_network_active(), 'A per-site activation is not a network activation.' );
+cookiechimp_test_assert( '' === cookiechimp_get_account_id(), 'A per-site activation must not fall back to the network Account ID.' );
+$cookiechimp_test_options['cookiechimp_account_id'] = 'SiteOnly234';
+cookiechimp_test_assert( 'SiteOnly234' === cookiechimp_get_account_id(), 'A per-site activation should use the site Account ID.' );
+
+// Multisite, network-activated: sites inherit the network Account ID unless overridden.
+$cookiechimp_test_site_options['active_sitewide_plugins'] = array( 'cookiechimp.php' => 1 );
+$cookiechimp_test_options['cookiechimp_account_id']       = '';
+cookiechimp_test_assert( true === cookiechimp_is_network_active(), 'The plugin should detect network activation.' );
+cookiechimp_test_assert( 'Network234' === cookiechimp_get_account_id(), 'Sites should inherit the network Account ID.' );
+$cookiechimp_test_options['cookiechimp_account_id'] = 'Override234';
+cookiechimp_test_assert( 'Override234' === cookiechimp_get_account_id(), 'A site Account ID should override the network Account ID.' );
+$cookiechimp_test_options['cookiechimp_account_id'] = '';
+
+$cookiechimp_test_script_loader->rendered_handles = array();
+cookiechimp_insert_js();
+cookiechimp_test_assert( 'https://cookiechimp.com/widget/Network234.js' === $cookiechimp_test_scripts['cookiechimp-widget'][0], 'The widget should load the network account when a site has no override.' );
+
+$cookiechimp_test_site_options['cookiechimp_network_account_id'] = '../invalid';
+cookiechimp_test_assert( '' === cookiechimp_get_account_id(), 'An invalid network Account ID must be ignored.' );
+
+cookiechimp_test_assert( true === cookiechimp_update_network_account_id( ' Network567 ' ), 'A valid network Account ID should be saved.' );
+cookiechimp_test_assert( 'Network567' === $cookiechimp_test_site_options['cookiechimp_network_account_id'], 'The network Account ID should be normalized before saving.' );
+cookiechimp_test_assert( false === cookiechimp_update_network_account_id( 'bad/id' ), 'An invalid network Account ID should be rejected.' );
+cookiechimp_test_assert( 'Network567' === $cookiechimp_test_site_options['cookiechimp_network_account_id'], 'An invalid network Account ID must not replace the saved value.' );
+cookiechimp_test_assert( true === cookiechimp_update_network_account_id( '' ), 'An empty network Account ID should be allowed.' );
+cookiechimp_test_assert( '' === cookiechimp_get_account_id(), 'Clearing the network Account ID should disable the widget on sites without an override.' );
 
 $plugin_source = file_get_contents( dirname( __DIR__ ) . '/cookiechimp.php' );
 $readme_source = file_get_contents( dirname( __DIR__ ) . '/readme.txt' );
