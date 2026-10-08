@@ -188,6 +188,8 @@ cookiechimp_test_assert( true === cookiechimp_update_network_account_id( ' Netwo
 cookiechimp_test_assert( 'Network567' === $cookiechimp_test_site_options['cookiechimp_network_account_id'], 'The network Account ID should be normalized before saving.' );
 cookiechimp_test_assert( false === cookiechimp_update_network_account_id( 'bad/id' ), 'An invalid network Account ID should be rejected.' );
 cookiechimp_test_assert( 'Network567' === $cookiechimp_test_site_options['cookiechimp_network_account_id'], 'An invalid network Account ID must not replace the saved value.' );
+cookiechimp_test_assert( false === cookiechimp_update_network_account_id( 'Net\\work234' ), 'Already-unslashed input must not be unslashed again before validation.' );
+cookiechimp_test_assert( 'Network567' === $cookiechimp_test_site_options['cookiechimp_network_account_id'], 'A backslash in the network Account ID must not replace the saved value.' );
 cookiechimp_test_assert( true === cookiechimp_update_network_account_id( '' ), 'An empty network Account ID should be allowed.' );
 cookiechimp_test_assert( '' === cookiechimp_get_account_id(), 'Clearing the network Account ID should disable the widget on sites without an override.' );
 

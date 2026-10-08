@@ -121,7 +121,10 @@ function cookiechimp_register_settings() {
  * CookieChimp Account IDs are case-sensitive alphanumeric identifiers. Rejecting
  * path characters also ensures that the setting cannot alter the widget URL.
  *
- * @param mixed $value Submitted value.
+ * Callers must pass an already-unslashed value; options.php does this for the
+ * site setting. Unslashing again would strip characters that should be rejected.
+ *
+ * @param mixed $value Submitted, unslashed value.
  * @return string|null Normalized Account ID (possibly empty), or null when invalid.
  */
 function cookiechimp_normalize_account_id( $value ) {
@@ -129,7 +132,7 @@ function cookiechimp_normalize_account_id( $value ) {
 		return null;
 	}
 
-	$account_id = trim( sanitize_text_field( wp_unslash( (string) $value ) ) );
+	$account_id = trim( sanitize_text_field( (string) $value ) );
 
 	if ( '' === $account_id || cookiechimp_is_valid_account_id( $account_id ) ) {
 		return $account_id;
