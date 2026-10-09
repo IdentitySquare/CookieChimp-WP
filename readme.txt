@@ -3,7 +3,7 @@ Contributors: danielpaulme
 Tags: cookies, consent, GDPR, cookie banner, consent banner
 Requires at least: 5.0
 Tested up to: 7.1
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,8 @@ Adds the CookieChimp consent banner at the start of the website head so it can i
 This plugin integrates the CookieChimp consent management platform with WordPress. Enter your CookieChimp Account ID on the settings page and the plugin adds your account-specific widget to public pages.
 
 CookieChimp is printed synchronously at the earliest possible `wp_head` priority. This lets its optional auto-blocking feature install its interceptors before scripts added through the normal WordPress script queue or later `wp_head` callbacks.
+
+On WordPress Multisite, network-activate the plugin to manage one Account ID for every site from Network Admin. Each site can still override it with its own Account ID. If the plugin is activated on individual sites instead, each site uses its own Account ID.
 
 An active [CookieChimp account](https://cookiechimp.com/) is required. The [WP Consent API](https://wordpress.org/plugins/wp-consent-api/) plugin is recommended, but not required.
 
@@ -35,6 +37,11 @@ Requests to CookieChimp include the configured Account ID and standard web reque
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Go to 'Settings' -> 'CookieChimp' and enter your CookieChimp Account ID.
 
+On WordPress Multisite:
+
+* **Network-activated:** go to 'Network Admin' -> 'Settings' -> 'CookieChimp' and enter the Account ID used by every site. To use a different CookieChimp account on one site, enter its Account ID under 'Settings' -> 'CookieChimp' on that site. Leave a site's field empty to use the network Account ID.
+* **Activated per site:** enter an Account ID under 'Settings' -> 'CookieChimp' on each site where the plugin is active.
+
 == Frequently Asked Questions ==
 
 = Is CookieChimp guaranteed to be the first script on the page? =
@@ -45,7 +52,14 @@ The plugin prints CookieChimp before all other callbacks on WordPress's `wp_head
 
 No. The widget is loaded only after an administrator saves a valid CookieChimp Account ID.
 
+= Does CookieChimp support WordPress Multisite? =
+
+Yes. When the plugin is network-activated, a network administrator sets one Account ID for every site, and each site administrator can override it for their own site. When the plugin is activated on individual sites, each site needs its own Account ID.
+
 == Changelog ==
+
+= 1.1.0 =
+* Add WordPress Multisite support: network-activate the plugin to set one Account ID for the whole network, with optional per-site overrides.
 
 = 1.0.4 =
 * Correct the WordPress.org contributor username for the official owner account.
@@ -60,6 +74,9 @@ No. The widget is loaded only after an administrator saves a valid CookieChimp A
 * Initial public version.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+* Adds WordPress Multisite support with a network-wide Account ID and per-site overrides.
 
 = 1.0.4 =
 * Corrects the contributor attribution in the plugin listing.
