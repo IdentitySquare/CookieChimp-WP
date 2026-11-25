@@ -23,7 +23,7 @@ jobs:
       - name: Build WordPress.org package
         run: |
           mkdir -p build/cookiechimp
-          cp cookiechimp.php readme.txt build/cookiechimp/
+          cp cookiechimp.php readme.txt LICENSE build/cookiechimp/
 
       - name: Run plugin check
         uses: wordpress/plugin-check-action@v1
@@ -40,7 +40,9 @@ jobs:
 
       - name: Create review ZIP
         working-directory: build
-        run: zip -r cookiechimp.zip cookiechimp
+        run: |
+          zip -r cookiechimp.zip cookiechimp
+          unzip -p cookiechimp.zip cookiechimp/LICENSE | cmp ../LICENSE -
 
       - name: Upload review ZIP
         uses: actions/upload-artifact@v4
